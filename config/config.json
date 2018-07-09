@@ -1,0 +1,39 @@
+{
+  "port": 3015,
+  "minio": {
+    "endPoint": "minio",
+    "port": 9000,
+    "secure": false,
+    "accessKey": "",
+    "secretKey": ""
+  },
+  "neo4j": {
+    "enable": true,
+    "url": "bolt://localhost",
+    "user": "neo4j",
+    "pass": ""
+  },
+  "rabbit": {
+    "enable": true,
+    "url": "amqp://rabbitmq:rabbitmq@localhost:5672?heartbeat=3600",
+    "routingKey": "fpp.thumbnail",
+    "exchange": "fpp",
+    "exchangeType": "topic"
+  },
+  "rabbit_outgoing": {
+    "url": "amqp://rabbitmq:rabbitmq@localhost:5672?heartbeat=3600",
+    "routingKey": "fpp",
+    "exchange": "fpp",
+    "exchangeType": "topic"
+  },
+  "librarian": {
+    "enable": true,
+    "host": "http://localhost:3020",
+    "username": "botuser",
+    "password": ""
+  },
+  "downstream_actions": {
+    "success": false,
+    "error": false
+  }
+}
