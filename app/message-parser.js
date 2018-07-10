@@ -80,8 +80,7 @@ module.exports = function(bot) {
     var thumbnailPath = localpath+'-thumbnail.jpg';
 
     var options = {
-      // width: bot.config.get('fss.thumbWidth'), 
-      width: 100, 
+      // width: bot.config.get('fss.thumbWidth'),
       quality: 90
     }
 
@@ -97,22 +96,11 @@ module.exports = function(bot) {
           
           var imageUri= 'card-thumbs/File/' + uuid +'.jpg';
           return resolve(imageUri)
-          // Set Thumbnail=true on the node to get the thumbnail displaying properly.
-          // var enableThumbQuery = queryBuilder.addThumbnailQuery(uri, imageUri)
-          
-          // return bot.query(enableThumbQuery.compile(),enableThumbQuery.params()).then(function(result) {
-          //   bot.logger.info("Enabled thumbnail for file: '%s'", localpath);
-          //   return resolve(result);
-          // }).catch(function(err) {
-          //   bot.logger.error("Could not enable thumbnail for file '%s': %s", localpath, err.message);
-          //   // markCorrupt(uri);
-          //   return reject(err);
-          // })
         });
       })
     })
     
-    return timeout(thumbPromise, 10000).catch(function(err) {
+    return timeout(thumbPromise, 50000).catch(function(err) {
       helpers.deleteFile(thumbnailPath);
 
       if (err instanceof TimeoutError)
@@ -123,20 +111,4 @@ module.exports = function(bot) {
       throw err;
     })
   }
-
-  // Extracts summary text from file
-  // function extractThumb(mimetype, file) {
-  //   if(textGenerationMimeBlacklist.indexOf(mimetype) === -1) {
-  //     return new Promise(function(resolve, reject) {
-  //       textract.fromFileWithMimeAndPath(mimetype, file, function( error, text ) {
-  //         if(error) return reject(error);
-  //         return resolve(truncate(text, 30000));
-  //       })
-  //     });
-  //   }
-  //   else {
-  //     bot.logger.info("Not a fulltext-extractable MIME type. Skipping.")
-  //     return Promise.resolve(false);
-  //   }
-  // }
 }
