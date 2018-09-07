@@ -51,7 +51,7 @@ module.exports = {
       default: 9000,
       env: "MINIO_PORT"
     },
-    secure: {
+    useSSL: {
       doc: "Do we use SSL to connect to Minio?",
       format: "Boolean",
       default: false,

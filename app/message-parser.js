@@ -12,7 +12,7 @@ module.exports = function(bot) {
   var minioClient = new Minio.Client({
     endPoint: bot.config.get("minio.endPoint"),
     port: bot.config.get("minio.port"),
-    secure: bot.config.get("minio.secure"),
+    useSSL: bot.config.get("minio.useSSL"),
     accessKey: bot.config.get("minio.accessKey"),
     secretKey: bot.config.get("minio.secretKey")
   });
@@ -21,7 +21,7 @@ module.exports = function(bot) {
 
   // First ingestion point.
   this.handleMessage = function(msg) {
-    var tmpPath = "/tmp/"+msg.Uuid;
+    var tmpPath = "/tmp/thumb-"+msg.Uuid;
     return processMessage(msg).then((resultStr) => {
       var downstream_actions = bot.config.get('downstream_actions');
       var newRoute = downstream_actions[resultStr];
@@ -53,7 +53,7 @@ module.exports = function(bot) {
   function processMessage(msg) {
     var mimetype = msg.Mime;
     if(!mimetype) mimetype = "application/octet-stream";
-    var tmpPath = "/tmp/"+msg.Uuid;
+    var tmpPath = "/tmp/thumb-"+msg.Uuid;
 
     return helpers.getFile(bot, msg.Library, msg.Path, tmpPath).then((tmpPath) => {
       bot.logger.info("Attempting Thumb Extraction from file '%s'", msg.Path);
@@ -81,7 +81,9 @@ module.exports = function(bot) {
 
     var options = {
       // width: bot.config.get('fss.thumbWidth'),
-      quality: 90
+      quality: 90,
+      pagerange: '1',
+      background: "#ffffff"
     }
 
     var thumbPromise = new Promise((resolve,reject) => {
@@ -100,7 +102,7 @@ module.exports = function(bot) {
       })
     })
     
-    return timeout(thumbPromise, 50000).catch(function(err) {
+    return timeout(thumbPromise, 500000).catch(function(err) {
       helpers.deleteFile(thumbnailPath);
 
       if (err instanceof TimeoutError)

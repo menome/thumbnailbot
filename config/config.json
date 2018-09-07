@@ -3,15 +3,15 @@
   "minio": {
     "endPoint": "minio",
     "port": 9000,
-    "secure": false,
-    "accessKey": "",
-    "secretKey": ""
+    "useSSL": false,
+    "accessKey": "abcd123",
+    "secretKey": "abcd12345"
   },
   "neo4j": {
     "enable": true,
-    "url": "bolt://localhost",
+    "url": "bolt://neo4j",
     "user": "neo4j",
-    "pass": ""
+    "pass": "graphPaper!"
   },
   "rabbit": {
     "enable": true,
@@ -28,7 +28,7 @@
   },
   "librarian": {
     "enable": true,
-    "host": "http://localhost:3020",
+    "host": "http://librarian:3020",
     "username": "botuser",
     "password": ""
   },
