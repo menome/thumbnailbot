@@ -92,7 +92,7 @@ module.exports = function(bot) {
 
         minioClient.fPutObject('card-thumbs',"File/"+uuid+'.jpg', thumbnailPath, {"Content-Type": "image/jpeg"}, function(err) {
           if(err) return reject(err);
-
+          
           //We'll remove the generated thumbnail locally
           helpers.deleteFile(thumbnailPath);
           
