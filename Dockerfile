@@ -1,6 +1,6 @@
 # note that order matters in terms of docker build layers. Least changed near start to most changed...
 # This image will be based on the official nodejs docker image
-FROM node:8.4.0
+FROM node:10.15.0-stretch
 
 EXPOSE 80
 ENV PORT 80

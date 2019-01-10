@@ -1,13 +1,12 @@
 {
   "name": "fpp-thumbnail",
   "private": true,
-  "version": "1.0.2",
+  "version": "1.1.0",
   "description": "Extracts thumbnails from files.",
   "repository": "https://github.com/menome",
   "license": "Commercial",
   "dependencies": {
     "forever": "^0.15.3",
-    "filepreview": "^1.0.16",
     "express": "^4.16.3",
     "minio": "^7.0.1",
     "neo4j-driver": "^1.6.3",
@@ -28,8 +27,8 @@
   },
   "scripts": {
     "start": "[ \"$NODE_ENV\" = \"production\" ] && npm run prod || npm run dev",
-    "dev": "node ./node_modules/nodemon/bin/nodemon.js app/app.js",
-    "prod": "./node_modules/forever/bin/forever --minUptime 5000 --spinSleepTime 1000 app/app.js",
+    "dev": "node ./node_modules/.bin/nodemon app/app.js",
+    "prod": "./node_modules/.bin/forever --minUptime 5000 --spinSleepTime 1000 app/app.js",
     "test": "./node_modules/mocha/bin/mocha -C test"
   }
 }
