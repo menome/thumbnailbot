@@ -26,4 +26,4 @@ RUN rm -f .npmrc
 COPY ./app app
 COPY ./config config
 
-CMD unoconv --listener && npm start
+CMD npm start
