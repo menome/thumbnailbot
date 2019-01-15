@@ -24,9 +24,8 @@ module.exports = function(bot) {
     var tmpPath = "/tmp/thumb-"+msg.Uuid;
 
     return processMessage(msg).then((resultStr) => {
-      var downstream_actions = bot.config.get('downstream_actions');
-      var newRoute = downstream_actions[resultStr];
-
+      var newRoute = helpers.getNextRoutingKey(resultStr, bot);
+      
       if(newRoute === false || newRoute === undefined) {
         helpers.deleteFile(tmpPath);
         return bot.logger.info("No next routing key.");
