@@ -11,6 +11,7 @@ module.exports = {
 
 const imageMagickTypes = [
   "application/pdf",
+  "image/png",
   "image/bmp",
   "image/cis-cod",
   "image/gif",

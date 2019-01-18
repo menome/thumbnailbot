@@ -60,7 +60,7 @@ module.exports = function(bot) {
 
       return extractThumb(tmpPath, mimetype, msg.Uuid).then((path) => {
         if(path === false) return;
-        var thumbQuery = queryBuilder.addThumbQuery(msg.Uuid, path);
+        var thumbQuery = queryBuilder.addThumbQuery(msg.Uuid, path, bot.config.get("thumbnailLibrary"));
         return bot.neo4j.query(thumbQuery.compile(), thumbQuery.params()).then(() => {
           bot.logger.info("Added thumbnail to file %s", msg.Path);
           return "success";
@@ -79,18 +79,19 @@ module.exports = function(bot) {
 
     var options = {
       mimetype,
-      width: 300,
-      height: 300
+      width: 600,
+      height: 600
     }
 
     var thumbPromise = thumbnailer.makeThumbnail(localpath, options).then((buffer) => {
-      var imageUri= 'card-thumbs/File/' + uuid +'.png';
-      return minioClient.putObject('card-thumbs',"File/"+uuid+'.png', buffer, {"Content-Type": "image/png"}).then(() => {
+      var imageUri= bot.config.get("thumbnailPrefix").trimRight("/") + "/File/" + uuid +".png";
+
+      return minioClient.putObject(bot.config.get("thumbnailPrefix").trimRight("/"), "File/"+uuid+'.png', buffer, {"Content-Type": "image/png"}).then(() => {
         return imageUri;
       });
     })
 
-    return timeout(thumbPromise, 500000).catch(function(err) {
+    return timeout(thumbPromise, 10000).catch(function(err) {
       if (err instanceof TimeoutError)
         bot.logger.error("Thumbnail generation timed out. Skipping.");
       else

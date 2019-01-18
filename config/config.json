@@ -35,5 +35,7 @@
   "downstream_actions": {
     "success": false,
     "error": false
-  }
+  },
+  "thumbnailLibrary": "miniofiles",
+  "thumbnailPrefix": "card-thumbs"
 }

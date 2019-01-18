@@ -85,5 +85,17 @@ module.exports = {
           throw new Error("Routing keys must be strings, or 'false'.")
       })
     }
-  }
+  },
+  thumbnailLibrary: {
+    doc: "Which library to upload thumbnails to",
+    format: String,
+    default: "miniofiles",
+    env: "THUMBNAIL_LIBRARY"
+  },
+  thumbnailPrefix: {
+    doc: "Path prefix where thumbnails should be placed within the library",
+    format: String,
+    default: "card-thumbs",
+    env: "THUMBNAIL_PREFIX"
+  },
 };
