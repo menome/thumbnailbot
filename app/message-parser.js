@@ -63,7 +63,12 @@ module.exports = function(bot) {
         var thumbQuery = queryBuilder.addThumbQuery(msg.Uuid, path, bot.config.get("thumbnailLibrary"));
         return bot.neo4j.query(thumbQuery.compile(), thumbQuery.params()).then(() => {
           bot.logger.info("Added thumbnail to file %s", msg.Path);
-          return "success";
+          var propagateQuery = queryBuilder.propagateThumbQuery(msg.Uuid);
+          return bot.neo4j.query(propagateQuery.compile(), propagateQuery.params()).then((result) => {
+            console.log(result.records[0])
+            bot.logger.info("Attempted to populate additional card thumbnails.", msg.Path);
+            return "success";
+          })
         })
       }).catch(err => {
         bot.logger.error(err)
