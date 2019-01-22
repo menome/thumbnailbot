@@ -65,8 +65,10 @@ module.exports = function(bot) {
           bot.logger.info("Added thumbnail to file %s", msg.Path);
           var propagateQuery = queryBuilder.propagateThumbQuery(msg.Uuid);
           return bot.neo4j.query(propagateQuery.compile(), propagateQuery.params()).then((result) => {
-            console.log(result.records[0])
-            bot.logger.info("Attempted to populate additional card thumbnails.", msg.Path);
+            if(result.records[0].get('count').toNumber() > 0) {
+              bot.logger.info("Added additional %s card thumbnails.", result.records[0].get('count'));
+            }
+            
             return "success";
           })
         })
