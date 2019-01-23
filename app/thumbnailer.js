@@ -35,7 +35,7 @@ const imageMagickTypes = [
 
 // Currently just Office documents and PDFs.
 const unoconvTypes = [
-  "application/PDF",
+  "application/pdf",
   "application/msword",
   "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
   "application/vnd.openxmlformats-officedocument.wordprocessingml.template",

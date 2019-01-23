@@ -1,3 +1,4 @@
 # FPP Thumbnail Bot
 
-Both that extracts thumbnails from files.
+Bot that extracts thumbnails from files.
+

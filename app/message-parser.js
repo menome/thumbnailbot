@@ -98,7 +98,7 @@ module.exports = function(bot) {
       });
     })
 
-    return timeout(thumbPromise, 10000).catch(function(err) {
+    return timeout(thumbPromise, 100000).catch(function(err) {
       if (err instanceof TimeoutError)
         bot.logger.error("Thumbnail generation timed out. Skipping.");
       else
