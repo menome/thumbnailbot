@@ -6,7 +6,8 @@ const child_process = require("child_process");
  * Assumes unoconv and imagemagick are installed and present in the PATH
  */
 module.exports = {
-  makeThumbnail
+  makeThumbnail,
+  countPdfPages
 }
 
 const imageMagickTypes = [
@@ -85,13 +86,13 @@ function makeThumbnail(inFilePath, options = {}) {
 
 // Uses imagemagick to convert.
 // Returns a buffer.
-function imageThumbnail(inFilePath, options) {
+function imageThumbnail(inFilePath, {width, height}) {
   return new Promise((resolve,reject) => {
     let size = "x";
-    if(!options.width && !options.height)
+    if(!width && !height)
       size = "x300";
     else
-      size = (options.width ? options.width : "") + "x" + (options.height ? options.height : "");
+      size = (width || "") + "x" + (height || "");
 
     let convert_child = child_process.spawn("convert", [
       "-thumbnail", size,
@@ -124,11 +125,16 @@ function imageThumbnail(inFilePath, options) {
 
 // More complex.
 // Converts docs into PDF, then uses imagemagick for thumbnailage.
-function docThumbnail(inFilePath, options) {
+function docThumbnail(inFilePath, {width, height, page}) {
   return new Promise((resolve,reject) => {
+    var prOption = "PageRange=1"; //1-indexed for some reason.
+    if(page) {
+      prOption = "PageRange="+page
+    }
+
     let outpdf = child_process.spawn("unoconv", [
       "-f", "pdf",
-      "-e", "PageRange=1",
+      "-e", prOption,
       "--stdout",
       inFilePath
     ], {
@@ -147,10 +153,10 @@ function docThumbnail(inFilePath, options) {
     })
 
     let size = "x";
-    if(!options.width && !options.height)
+    if(!width && !height)
       size = "x300";
     else
-      size = (options.width ? options.width : "") + "x" + (options.height ? options.height : "");
+      size = (width || "") + "x" + (height || "");
 
     // Make our own pipe! No intermediate files stored on disk.
     let thumbout = child_process.spawn("convert", [
@@ -179,6 +185,15 @@ function docThumbnail(inFilePath, options) {
       }
 
       resolve(Buffer.concat(thumbout_stdout));
+    });
+  })
+}
+
+function countPdfPages(pdfPath) {
+  return new Promise((resolve, reject) => {
+    child_process.exec("pdfinfo "+pdfPath+" | grep Pages: | awk '{print $2}'", (error, stdout) => {
+      if(error) return reject(error)
+      return resolve(parseInt(stdout));
     });
   })
 }

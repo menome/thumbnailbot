@@ -56,38 +56,63 @@ module.exports = function(bot) {
     var tmpPath = "/tmp/thumb-"+msg.Uuid;
 
     return helpers.getFile(bot, msg.Library, msg.Path, tmpPath).then((tmpPath) => {
-      bot.logger.info("Attempting Thumb Extraction from file '%s'", msg.Path);
+      if(bot.config.get("paginate") && mimetype === 'application/pdf') {
+        bot.logger.info("Attempting page-based Thumb Extraction from file '%s'", msg.Path);
+        return thumbnailer.countPdfPages(tmpPath).then(async (pageCount) => {
+          for(let pageno=1; pageno<=pageCount; pageno++) { // Pages are 1-indexed for this case.
+            let thumbpath = await extractThumb(tmpPath, mimetype, msg.Uuid, pageno) 
+            if(!thumbpath) continue;
 
-      return extractThumb(tmpPath, mimetype, msg.Uuid).then((path) => {
-        if(path === false) return;
-        var thumbQuery = queryBuilder.addThumbQuery(msg.Uuid, path, bot.config.get("thumbnailLibrary"));
-        return bot.neo4j.query(thumbQuery.compile(), thumbQuery.params()).then(() => {
-          bot.logger.info("Added thumbnail to file %s", msg.Path);
-          var propagateQuery = queryBuilder.propagateThumbQuery(msg.Uuid);
-          return bot.neo4j.query(propagateQuery.compile(), propagateQuery.params()).then((result) => {
-            if(result.records[0].get('count').toNumber() > 0) {
-              bot.logger.info("Added additional %s card thumbnails.", result.records[0].get('count'));
-            }
+            var pageUuid = bot.genUuid()
+
+            let thumbQuery = queryBuilder.addThumbPageQuery({uuid: msg.Uuid, pageUuid, thumbpath, thumblibrary: bot.config.get("thumbnailLibrary"), pageno});
+            await bot.neo4j.query(thumbQuery.compile(), thumbQuery.params())
             
-            return "success";
-          })
+            // If it's the first page, also set this as the doc's thumb.
+            if(pageno === 1) {
+              let docThumbQuery = queryBuilder.addThumbQuery(msg.Uuid, thumbpath, bot.config.get("thumbnailLibrary"));
+              await bot.neo4j.query(docThumbQuery.compile(), docThumbQuery.params())
+            }
+
+            bot.logger.info("Added thumbnail for page %s", pageno);
+          }
+        }).catch(err => {
+          bot.logger.error(err)
+          return "error";
         })
-      }).catch(err => {
-        bot.logger.error(err)
-        return "error";
-      })
+      } else {
+        bot.logger.info("Attempting single Thumb Extraction from file '%s'", msg.Path);
+        return extractThumb(tmpPath, mimetype, msg.Uuid).then((path) => {
+          if(path === false) return;
+          var thumbQuery = queryBuilder.addThumbQuery(msg.Uuid, path, bot.config.get("thumbnailLibrary"));
+          return bot.neo4j.query(thumbQuery.compile(), thumbQuery.params()).then(() => {
+            bot.logger.info("Added thumbnail to file %s", msg.Path);
+            var propagateQuery = queryBuilder.propagateThumbQuery(msg.Uuid);
+            return bot.neo4j.query(propagateQuery.compile(), propagateQuery.params()).then((result) => {
+              if(result.records[0].get('count').toNumber() > 0) {
+                bot.logger.info("Added additional %s card thumbnails.", result.records[0].get('count'));
+              }
+              
+              return "success";
+            })
+          })
+        }).catch(err => {
+          bot.logger.error(err)
+          return "error";
+        })
+      }
     })
   }
 
-
-  // Gets a thumbnail for the file.
-  function extractThumb(localpath, mimetype, uuid) {
+  // Gets a thumbnail for the file. Page argument is 1-indexed.
+  function extractThumb(localpath, mimetype, uuid, page=1) {
     bot.logger.info("Attempting thumb Extraction for file '%s'", localpath)
 
     var options = {
       mimetype,
       width: 600,
-      height: 600
+      height: 600,
+      page
     }
 
     var thumbPromise = thumbnailer.makeThumbnail(localpath, options).then((buffer) => {

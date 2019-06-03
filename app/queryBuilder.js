@@ -10,6 +10,17 @@ module.exports.addThumbQuery = function(uuid, thumbpath, thumblibrary) {
 }
 
 /**
+ * Returns a query that adds a thumbnail to a page node.
+ */
+module.exports.addThumbPageQuery = function({uuid, pageUuid, thumbpath, thumblibrary, pageno}) {
+  var query = new Query();
+  query.match("(f:Card {Uuid: $uuid})", {uuid})
+  query.merge("(f)-[:HAS_PAGE]->(p:Card:Page {PageNumber: $pageno}) ON CREATE SET p.Uuid = $pageUuid", {pageno, pageUuid})
+  query.set("p.Thumbnail = $thumbpath, p.ThumbnailLibrary = $thumblibrary", {thumbpath, thumblibrary})
+  return query;
+}
+
+/**
  * If a card without a thumbnail is linked to this file, and this file has a thumbnail, then propagate the thumbnail.
  */
 module.exports.propagateThumbQuery = function(uuid) {

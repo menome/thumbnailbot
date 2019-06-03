@@ -98,4 +98,10 @@ module.exports = {
     default: "card-thumbs",
     env: "THUMBNAIL_PREFIX"
   },
+  paginate: {
+    doc: "For PDF Documents, should we generate a thumbnail for each page?",
+    format: Boolean,
+    default: false,
+    env: "PAGINATE_RESULTS"
+  }
 };

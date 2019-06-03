@@ -10,7 +10,7 @@ RUN mkdir /srv/app
 WORKDIR /srv/app
 
 # Dependencies from package manager
-RUN apt-get update && apt-get install -y unoconv libav-tools xpdf imagemagick ghostscript
+RUN apt-get update && apt-get install -y unoconv libav-tools xpdf imagemagick ghostscript poppler-utils
 
 # Add build file
 COPY ./package.json package.json
