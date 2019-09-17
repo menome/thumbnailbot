@@ -53,20 +53,26 @@ module.exports = function(bot) {
   function processMessage(msg) {
     var mimetype = msg.Mime;
     if(!mimetype) mimetype = "application/octet-stream";
-    var tmpPath = "/tmp/thumb-"+msg.Uuid;
+    var tmpPath = "/tmp/thumbgen-"+msg.Uuid;
 
     return helpers.getFile(bot, msg.Library, msg.Path, tmpPath).then((tmpPath) => {
       if(bot.config.get("paginate") && mimetype === 'application/pdf') {
         bot.logger.info("Attempting page-based Thumb Extraction from file '%s'", msg.Path);
         return thumbnailer.countPdfPages(tmpPath).then(async (pageCount) => {
           for(let pageno=1; pageno<=pageCount; pageno++) { // Pages are 1-indexed for this case.
-            let thumbpath = await extractThumb(tmpPath, mimetype, msg.Uuid, pageno) 
-            if(!thumbpath) continue;
-
             var pageUuid = bot.genUuid()
-
+            let thumbpath = await extractImage(tmpPath, mimetype, msg.Uuid, pageno) 
+            if(!thumbpath) continue;
+            
             let thumbQuery = queryBuilder.addThumbPageQuery({uuid: msg.Uuid, pageUuid, thumbpath, thumblibrary: bot.config.get("thumbnailLibrary"), pageno});
             await bot.neo4j.query(thumbQuery.compile(), thumbQuery.params())
+
+            if(bot.config.get("generateHighRes")) {
+              let imagePath = await extractImage(tmpPath, mimetype, msg.Uuid, pageno, "page-image") 
+              if(!imagePath) continue;
+              let pageQuery = queryBuilder.addImagePageQuery({uuid: msg.Uuid, pageUuid, imagePath, thumblibrary: bot.config.get("thumbnailLibrary"), pageno});
+              await bot.neo4j.query(pageQuery.compile(), pageQuery.params())
+            }
             
             // If it's the first page, also set this as the doc's thumb.
             if(pageno === 1) {
@@ -74,7 +80,7 @@ module.exports = function(bot) {
               await bot.neo4j.query(docThumbQuery.compile(), docThumbQuery.params())
             }
 
-            bot.logger.info("Added thumbnail for page %s", pageno);
+            bot.logger.info("Added images for page %s", pageno);
           }
         }).catch(err => {
           bot.logger.error(err)
@@ -82,7 +88,7 @@ module.exports = function(bot) {
         })
       } else {
         bot.logger.info("Attempting single Thumb Extraction from file '%s'", msg.Path);
-        return extractThumb(tmpPath, mimetype, msg.Uuid).then((path) => {
+        return extractImage(tmpPath, mimetype, msg.Uuid).then((path) => {
           if(path === false) return;
           var thumbQuery = queryBuilder.addThumbQuery(msg.Uuid, path, bot.config.get("thumbnailLibrary"));
           return bot.neo4j.query(thumbQuery.compile(), thumbQuery.params()).then(() => {
@@ -104,26 +110,23 @@ module.exports = function(bot) {
     })
   }
 
-  // Gets a thumbnail for the file. Page argument is 1-indexed.
-  function extractThumb(localpath, mimetype, uuid, page=1) {
-    bot.logger.info("Attempting thumb Extraction for file '%s'", localpath)
-
+  // Generate an image for the file. Page argument is 1-indexed.
+  function extractImage(localpath, mimetype, fileUuid, page=1, type="page-thumb") {
     var options = {
       mimetype,
-      width: 600,
-      height: 600,
+      width: type === "page-thumb" ? 600 : 1200,
       page
     }
 
-    var thumbPromise = thumbnailer.makeThumbnail(localpath, options).then((buffer) => {
-      var imageUri= bot.config.get("thumbnailPrefix").trimRight("/") + "/File/" + uuid +".png";
+    var imagePromise = thumbnailer.makeThumbnail(localpath, options).then((buffer) => {
+      var imageUri= bot.config.get("thumbnailPrefix").trimRight("/") + "/" + fileUuid + "/" + type + "-" + page +".png";
 
-      return minioClient.putObject(bot.config.get("thumbnailPrefix").trimRight("/"), "File/"+uuid+'.png', buffer, {"Content-Type": "image/png"}).then(() => {
+      return minioClient.putObject(bot.config.get("thumbnailPrefix").trimRight("/"), fileUuid + "/" + type + "-" + page +".png", buffer, {"Content-Type": "image/png"}).then(() => {
         return imageUri;
       });
     })
 
-    return timeout(thumbPromise, 100000).catch(function(err) {
+    return timeout(imagePromise, 100000).catch(function(err) {
       if (err instanceof TimeoutError)
         bot.logger.error("Thumbnail generation timed out. Skipping.");
       else

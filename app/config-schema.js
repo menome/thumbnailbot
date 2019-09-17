@@ -93,9 +93,9 @@ module.exports = {
     env: "THUMBNAIL_LIBRARY"
   },
   thumbnailPrefix: {
-    doc: "Path prefix where thumbnails should be placed within the library",
+    doc: "Path prefix where images should be placed within the library",
     format: String,
-    default: "card-thumbs",
+    default: "file-artifacts",
     env: "THUMBNAIL_PREFIX"
   },
   paginate: {
@@ -103,5 +103,11 @@ module.exports = {
     format: Boolean,
     default: false,
     env: "PAGINATE_RESULTS"
+  },
+  generateHighRes: {
+    doc: "Should we generate a high res raster image of each page too? One that can be OCR'd or easily displayed and annotated in a web UI.",
+    format: Boolean,
+    default: false,
+    env: "GENERATE_HIGH_RES"
   }
 };

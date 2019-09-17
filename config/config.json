@@ -37,6 +37,7 @@
     "error": false
   },
   "thumbnailLibrary": "miniofiles",
-  "thumbnailPrefix": "card-thumbs",
-  "paginate": false
+  "thumbnailPrefix": "file-artifacts",
+  "paginate": true,
+  "generateHighRes": true
 }
