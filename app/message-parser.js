@@ -3,19 +3,10 @@ const queryBuilder = require('./queryBuilder');
 const RabbitClient = require('@menome/botframework/rabbitmq');
 const helpers = require('./helpers');
 const thumbnailer = require("./thumbnailer");
-const Minio = require('minio');
 const {timeout, TimeoutError} = require('promise-timeout');
 
 module.exports = function(bot) {
   var outQueue = new RabbitClient(bot.config.get('rabbit_outgoing'));
-
-  var minioClient = new Minio.Client({
-    endPoint: bot.config.get("minio.endPoint"),
-    port: bot.config.get("minio.port"),
-    useSSL: bot.config.get("minio.useSSL"),
-    accessKey: bot.config.get("minio.accessKey"),
-    secretKey: bot.config.get("minio.secretKey")
-  });
 
   outQueue.connect();
 
@@ -119,11 +110,10 @@ module.exports = function(bot) {
     }
 
     var imagePromise = thumbnailer.makeThumbnail(localpath, options).then((buffer) => {
-      var imageUri= bot.config.get("thumbnailPrefix").trimRight("/") + "/" + fileUuid + "/" + type + "-" + page +".png";
-
-      return minioClient.putObject(bot.config.get("thumbnailPrefix").trimRight("/"), fileUuid + "/" + type + "-" + page +".png", buffer, {"Content-Type": "image/png"}).then(() => {
+      var imageUri = bot.config.get("thumbnailPrefix").trimRight("/") + "/" + fileUuid + "/" + type + "-" + page +".png";
+      return bot.librarian.upload(bot.config.get("thumbnailLibrary"), imageUri, buffer, "image/png", type+"-"+page+".png").then(() => {
         return imageUri;
-      });
+      })
     })
 
     return timeout(imagePromise, 100000).catch(function(err) {

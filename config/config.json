@@ -1,12 +1,5 @@
 {
   "port": 3019,
-  "minio": {
-    "endPoint": "localhost",
-    "port": 9000,
-    "useSSL": false,
-    "accessKey": "menomeuser",
-    "secretKey": "FEsbpaOZWEEFFgbaBdIG"
-  },
   "neo4j": {
     "enable": true,
     "url": "bolt://localhost",
