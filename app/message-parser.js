@@ -105,7 +105,7 @@ module.exports = function(bot) {
   function extractImage(localpath, mimetype, fileUuid, page=1, type="page-thumb") {
     var options = {
       mimetype,
-      width: type === "page-thumb" ? 600 : 1200,
+      width: type === "page-thumb" ? 600 : bot.config.get("highResWidth"),
       page
     }
 

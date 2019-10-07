@@ -71,5 +71,11 @@ module.exports = {
     format: Boolean,
     default: false,
     env: "GENERATE_HIGH_RES"
+  },
+  highResWidth: {
+    doc: "What width of high-res image is produced",
+    format: Number,
+    default: 1200,
+    env: "HIGH_RES_WIDTH"
   }
 };
