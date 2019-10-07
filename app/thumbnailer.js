@@ -68,6 +68,7 @@ const unoconvTypes = [
 //   mime: string (The MIME type of the input data.)
 //   width: number
 //   height: number
+//   page: number. One-indexed. For some reason.
 // Returns a promise that has a buffer with PNG image data.
 function makeThumbnail(inFilePath, options = {}) {
   if(!options.mimetype) options.mimetype = "application/octet-stream";
@@ -86,7 +87,7 @@ function makeThumbnail(inFilePath, options = {}) {
 
 // Uses imagemagick to convert.
 // Returns a buffer.
-function imageThumbnail(inFilePath, {width, height}) {
+function imageThumbnail(inFilePath, {width, height, page}) {
   return new Promise((resolve,reject) => {
     let size = "x";
     if(!width && !height)
@@ -94,10 +95,14 @@ function imageThumbnail(inFilePath, {width, height}) {
     else
       size = (width || "") + "x" + (height || "");
 
+    // Cause it's 1-indexed.
+    if(page) page = page-1
+    else page = 0
+    
     let convert_child = child_process.spawn("convert", [
       "-thumbnail", size,
       "-background", "white",
-      path.resolve(inFilePath)+"[0]",
+      path.resolve(inFilePath)+"["+page+"]",
       "png:-"
     ], {
       stdio: ['ignore', 'pipe', 'pipe']
