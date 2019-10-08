@@ -106,7 +106,8 @@ module.exports = function(bot) {
     var options = {
       mimetype,
       width: type === "page-thumb" ? 600 : bot.config.get("highResWidth"),
-      page
+      page,
+      density: type === "page-thumb" ? 150 : 300,
     }
 
     var imagePromise = thumbnailer.makeThumbnail(localpath, options).then((buffer) => {
