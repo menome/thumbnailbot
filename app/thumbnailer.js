@@ -91,9 +91,11 @@ function imageThumbnail(inFilePath, {width, height, page}) {
   return new Promise((resolve,reject) => {
     let size = "x";
     if(!width && !height)
-      size = "x300";
+      size = "x300^";
+    else if(width && !height)
+      size = width + "x" + width + "^";
     else
-      size = (width || "") + "x" + (height || "");
+      size = (width || "") + "x" + (height || "") + "^";
 
     // Cause it's 1-indexed.
     if(page) page = page-1
