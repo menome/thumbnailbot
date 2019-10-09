@@ -52,7 +52,7 @@ module.exports = function(bot) {
         return thumbnailer.countPdfPages(tmpPath).then(async (pageCount) => {
           for(let pageno=1; pageno<=pageCount; pageno++) { // Pages are 1-indexed for this case.
             var pageUuid = bot.genUuid()
-            let thumbpath = await extractImage(tmpPath, mimetype, msg.Uuid, pageno) 
+            let thumbpath = await extractImage(tmpPath, mimetype, msg.Uuid, pageno)
             if(!thumbpath) continue;
             
             let thumbQuery = queryBuilder.addThumbPageQuery({uuid: msg.Uuid, pageUuid, thumbpath, thumblibrary: bot.config.get("thumbnailLibrary"), pageno});

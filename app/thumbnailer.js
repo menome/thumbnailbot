@@ -102,6 +102,9 @@ function imageThumbnail(inFilePath, {width, height, page}) {
     let convert_child = child_process.spawn("convert", [
       "-thumbnail", size,
       "-background", "white",
+      "-density", "150",
+      "-quality", "100",
+      "-sharpen", "0x1.0",
       path.resolve(inFilePath)+"["+page+"]",
       "png:-"
     ], {
