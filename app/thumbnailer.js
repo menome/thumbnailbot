@@ -107,6 +107,7 @@ function imageThumbnail(inFilePath, {width, height, page}) {
       "-density", "150",
       "-quality", "100",
       "-sharpen", "0x1.0",
+      "-flatten",
       path.resolve(inFilePath)+"["+page+"]",
       "png:-"
     ], {
