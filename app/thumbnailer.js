@@ -87,7 +87,7 @@ function makeThumbnail(inFilePath, options = {}) {
 
 // Uses imagemagick to convert.
 // Returns a buffer.
-function imageThumbnail(inFilePath, {width, height, page}) {
+function imageThumbnail(inFilePath, {width, height, density, page}) {
   return new Promise((resolve,reject) => {
     let size = "x";
     if(!width && !height)
@@ -104,7 +104,7 @@ function imageThumbnail(inFilePath, {width, height, page}) {
     let convert_child = child_process.spawn("convert", [
       "-thumbnail", size,
       "-background", "white",
-      "-density", "150",
+      "-density", density,
       "-quality", "100",
       "-sharpen", "0x1.0",
       "-flatten",
