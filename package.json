@@ -1,7 +1,7 @@
 {
   "name": "fpp-thumbnail",
   "private": true,
-  "version": "1.7.4",
+  "version": "1.7.5",
   "description": "Extracts thumbnails from files.",
   "repository": "https://github.com/menome",
   "license": "Commercial",
