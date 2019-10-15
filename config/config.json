@@ -15,7 +15,7 @@
   },
   "rabbit_outgoing": {
     "url": "amqp://rabbitmq:68N34eTuS3n3dVzxBVqg@localhost:5672?heartbeat=3600",
-    "routingKey": "fpp",
+    "routingKey": "fpp.table_detector_queue",
     "exchange": "fpp",
     "exchangeType": "topic"
   },
