@@ -70,7 +70,7 @@ module.exports = function(bot) {
                 "Path":imagePath
               }
               var sent = outQueue.publishMessage(pageMsg, "fileProcessingMessage", {
-                routingKey: 'fpp.textract_queue', 
+                routingKey: 'fpp.table_detector_queue', 
                 exchange: 'fpp'
               })
               if(sent === true)
