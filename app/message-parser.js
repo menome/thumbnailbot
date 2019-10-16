@@ -69,7 +69,7 @@ module.exports = function(bot) {
                 "Library": bot.config.get("thumbnailLibrary"),
                 "Path":imagePath
               }
-              var sent = await outQueue.publishMessage(pageMsg, "fileProcessingMessage", {
+              var sent =  outQueue.publishMessage(pageMsg, "fileProcessingMessage", {
                 routingKey: 'fpp.table_detector_queue', 
                 exchange: 'fpp'
               })
