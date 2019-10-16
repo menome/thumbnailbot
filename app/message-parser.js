@@ -69,12 +69,12 @@ module.exports = function(bot) {
                 "Library": bot.config.get("thumbnailLibrary"),
                 "Path":imagePath
               }
-              var sent = outQueue.publishMessage(pageMsg, "fileProcessingMessage", {
+              var sent = await outQueue.publishMessage(pageMsg, "fileProcessingMessage", {
                 routingKey: 'fpp.table_detector_queue', 
                 exchange: 'fpp'
               })
               if(sent === true)
-                bot.logger.info("Sent topic-link message to refinery.")
+                bot.logger.info("Sent page information to table detector.")
             }
             
             // If it's the first page, also set this as the doc's thumb.
