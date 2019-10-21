@@ -62,10 +62,10 @@ module.exports = function(bot) {
               let imagePath = await extractImage(tmpPath, mimetype, msg.Uuid, pageno, "page-image") 
               if(!imagePath) continue;
               let pageQuery = queryBuilder.addImagePageQuery({uuid: msg.Uuid, pageUuid, imagePath, thumblibrary: bot.config.get("thumbnailLibrary"), pageno});
-              await bot.neo4j.query(pageQuery.compile(), pageQuery.params())
+              await bot.neo4j.query(pageQuery.compile(), pageQuery.params()).then((result) => {
               //publish on rabbit
               var pageMsg = {
-                "Uuid":pageUuid,
+                "Uuid":result.records[0].get("uuid"),
                 "Library": bot.config.get("thumbnailLibrary"),
                 "Path":imagePath
               }
@@ -75,6 +75,7 @@ module.exports = function(bot) {
               })
               if(sent === true)
                 bot.logger.info("Sent page information to table detector.")
+            })
             }
             
             // If it's the first page, also set this as the doc's thumb.

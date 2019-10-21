@@ -28,6 +28,7 @@ module.exports.addImagePageQuery = function({uuid, pageUuid, imagePath, thumblib
   query.match("(f:Card {Uuid: $uuid})", {uuid})
   query.merge("(f)-[:HAS_PAGE]->(p:Card:Page {PageNumber: $pageno}) ON CREATE SET p.Uuid = $pageUuid", {pageno, pageUuid})
   query.set("p.Image = $imagePath, p.ImageLibrary = $thumblibrary", {imagePath, thumblibrary})
+  query.return("p.Uuid as uuid")
   return query;
 }
 
