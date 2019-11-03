@@ -77,5 +77,11 @@ module.exports = {
     format: Number,
     default: 1200,
     env: "HIGH_RES_WIDTH"
+  },
+  timeout: {
+    doc: "How long should we wait for image",
+    format: Number,
+    default: 10000,
+    env: "TIMEOUT"
   }
 };
