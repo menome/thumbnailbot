@@ -1,7 +1,7 @@
 {
   "name": "fpp-thumbnail",
   "private": true,
-  "version": "1.8.4",
+  "version": "1.8.5",
   "description": "Extracts thumbnails from files.",
   "repository": "https://github.com/menome",
   "license": "Commercial",
@@ -16,7 +16,7 @@
     "uuid": "^3.3.2",
     "unfluff": "^3.2.0",
     "convict": "^4.3.2",
-    "@menome/botframework": "^2.2.4"
+    "@menome/botframework": "^3.1.1"
   },
   "devDependencies": {
     "mocha": "^2.5.3",
