@@ -142,6 +142,7 @@ module.exports = function (bot) {
     })
 
     return timeout(imagePromise, bot.config.get("timeout")).catch(function (err) {
+      bot.logger.info("Timeout set to " + bot.config.get("timeout"));
       if (err instanceof TimeoutError)
         bot.logger.error("Thumbnail generation timed out. Skipping.",{localpath:localpath,error:err.message});
       else
